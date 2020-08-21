@@ -1,10 +1,2 @@
-db.createUser({
-  user: "datauser",
-  pwd: "QwertyDataUserPassword",
-  roles: [
-    {
-      role: "readWrite",
-      db: "data"
-    },
-  ],
-});
+db.createCollection("images")
+db.createUser({user: "data",pwd: "data",roles: [{role: "readWrite",db: "data"}]});

@@ -16,7 +16,7 @@ export class ImageService {
     public async uploadImage(file: any, user: any) {
         const os = await S3Connector.getConnection();
         if (os) {
-            const filedetails = new ImageDetails(file.originalname, uuid(), "test", user, new Date(), true);
+            const filedetails = new ImageDetails(file.originalname, uuid(), "data", user, new Date(), true);
             return Promise.all([this.imageRepository.saveImageDetails(filedetails), os.fPutObject(filedetails.bucket, filedetails.uniquename, file.path, {})]);
         }
         else {
@@ -45,7 +45,7 @@ export class ImageService {
         if (os) {
             return await this.imageRepository.getImageUniqueName(filename, user)
                 .then(name => {
-                    return os.fGetObject('test', name.uniquename, savepath).then(() => {
+                    return os.fGetObject('data', name.uniquename, savepath).then(() => {
                         return true;
                     }).catch((err) => {
                         return [false, err];

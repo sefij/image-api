@@ -6,8 +6,7 @@ class QueueConnector {
     }
 
     public static async connect() {
-        const queueURI = process.env.QUEUE_URI;
-        await amqp.connect(queueURI ? queueURI : 'amqp://localhost').then((connection) => {
+        await amqp.connect(process.env.QUEUE_URI ? process.env.QUEUE_URI : 'amqp://localhost/default').then((connection) => {
             return connection.createChannel().then((channel) => {
                 QueueConnector.connection = channel;
             });
@@ -16,7 +15,7 @@ class QueueConnector {
     }
 
     public static async getConnection() {
-        if (this.connection != null) {
+        if (this.connection!= null) {
             return this.connection;
         } else {
             await this.connect();

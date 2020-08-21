@@ -1,65 +1,95 @@
 version: "3"
 networks:
   api_server_default:
-    external: true
+    external: false
 services:
-    minio:
-        image: minio/minio
-        networks:
-            - api_server_default
-        volumes:
-          - data:/data
-        ports:
-          - "9000:9000"
-        environment:
-          MINIO_ACCESS_KEY: minio
-          MINIO_SECRET_KEY: minio123
-        command: server http://minio/data
-        healthcheck:
-          test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-          interval: 30s
-          timeout: 20s
-          retries: 3
+  minio:
+    image: minio/minio
+    container_name: "minio"
+    hostname: minio
+    depends_on:
+      - mongo
+    networks:
+      - api_server_default
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
 
-    mongo:
-        image: mongo:latest
-        container_name: 'mongodb-container'
-        environment:
-            - MONGO_INITDB_DATABASE=data
-            - MONGO_INITDB_ROOT_USERNAME=rootusername
-            - MONGO_INITDB_ROOT_PASSWORD=QwertyDataUserPassword
-        volumes: 
-            - ./init-mongo.js:/docker-endpoint-initdb.d/initmongo.js:ro
-            - ./mongo-volume:/data/db
-        ports:
-            27017:27017
-    
-    rabbitmq:
-        image: rabbitmq:3-management-alpine
-        container_name: rabbitmq
-        volumes:
-            - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
-            - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
-            - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
-        # environment:
-        #     RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
-        #     RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-        #     RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-        ports:
-            - 5672:5672
-            - 15672:15672
+  create_buckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    networks:
+      - api_server_default
+    entrypoint: >
+      /bin/sh -c '
+      sleep 5;
+      /usr/bin/mc config host add s3 http://minio:9000 minio minio123 --api S3v4;
+      [[ ! -z "`/usr/bin/mc ls s3 | grep data`" ]] || /usr/bin/mc mb s3/data;
+      /usr/bin/mc policy download s3/data;
+      exit 0;'
 
-    node-image-api:
+  mongo:
+    image: mongo:latest
+    container_name: "mongodb"
+    hostname: mongo
+    depends_on:
+      - rabbit
+    networks:
+      - api_server_default
+    environment:
+      MONGO_INITDB_DATABASE: data
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/initmongo.js:ro
+    ports:
+      - 27017:27017
+  
+  rabbit:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    hostname: rabbit
+    networks:
+      - api_server_default
+    volumes:
+      - ./rabbitmq-config/definitions.json:/opt/definitions.json:ro
+      - ./rabbitmq-config/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  node-image-api:
+    container_name: "image-api"
     networks:
       - api_server_default
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-        - minio
-        - mongo
-        - rabbit
+      - minio
+      - rabbit
+    links:
+      - rabbit
+      - minio
+      - mongo
     environment:
-      ENV_NAME: dev
+      PORT: 3000
+      QUEUE_URI: "amqp://rabbit/default"
+      S3_URI: minio
+      S3_ACCESS_KEY: minio
+      S3_SECRET_KEY: minio123
+      MONGO_SERVER: mongo
+      MONGO_PORT: 27017
+      MONGO_USER: data
+      MONGO_PASS: data
+      DB_NAME: data
     ports:
       - 3000:3000
+    restart: always

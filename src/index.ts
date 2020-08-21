@@ -3,17 +3,11 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 let configPath;
-switch (process.env.NODE_ENV) {
-    case "preprod":
-        configPath = '.env.preprod';
-        break;
-    case "prod":
-        configPath = '.env.production';
-        break;
-    case "dev":
-        configPath = '.env.development';
+if (process.env.NODE_ENV === "dev") {
+    configPath = '.env.development';
+    dotenv.config({ path: configPath });
 }
-dotenv.config({ path: configPath});
+
 
 const PORT = normalizePort(process.env.PORT || '3000')
 app.set('port', PORT);

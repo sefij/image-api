@@ -49,7 +49,7 @@ export class ImageRepository implements ImageRepository {
         const db = await mongoConnector.getDbInstance();
         if (db) {
             const a: InsertOneWriteOpResult<any> = await db.collection("images").insertOne({ "originalname": file.originalname, "uniquename": file.uniquename, "bucket": file.bucket, "uploadinguser": file.uploadinguser, "uploaddate": new Date(), "isactive": true });
-            return a.result.ok === 1;
+            return a.result.ok;
         }
         else {
             return false;

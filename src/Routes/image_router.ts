@@ -22,7 +22,7 @@ export class ImageRouter implements RegistrableRouter {
         this.router.get("/image", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
             await this.imageService.getImage(req.query.filename, req.query.pathtosaveto, req.headers['x-username']).then(r => {
                 if (r) {
-                    res.status(200).send('success');
+                    res.status(200).send('Image downloaded successfully to: ' + req.query.pathtosaveto);
                     next();
                 }
                 else {
@@ -57,7 +57,7 @@ export class ImageRouter implements RegistrableRouter {
         this.router.post('/image', authMiddleware, multer({ dest: "./uploads/" }).single("upload"), (req: Request, res: Response, next: NextFunction) => {
             this.imageService.uploadImage(req.file, req.headers['x-username']).then((whatever) => {
                 if (whatever) {
-                    res.status(200).send('success');
+                    res.status(200).send('Image saved successfully');
                     this.imageService.removeTempImageFiles("./uploads/");
                     next();
                 }
@@ -73,11 +73,11 @@ export class ImageRouter implements RegistrableRouter {
         this.router.delete('/image', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
             this.imageService.removeImage(req.query.filename, req.headers['x-username']).then((whatever) => {
                 if (whatever) {
-                    res.status(200).send('success');
+                    res.status(200).send('Image deleted successfully');
                     next();
                 }
                 else {
-                    res.status(400).send('Failure uploading');
+                    res.status(400).send('Failure deleting');
                     next();
                 }
             }).catch(() => {
