@@ -5,7 +5,9 @@ import TYPES from "./types";
 import { RegistrableRouter } from "./Routes/RegistrableRouter";
 import container from "./inversify.config";
 import errorMiddleware from "./middleware/error.middleware";
-
+import * as swaggerUi from "swagger-ui-express";
+// tslint:disable-next-line: no-var-requires
+const conf = require('../Swagger');
 
 
 class App {
@@ -17,15 +19,16 @@ class App {
         this.initilizeErrorMiddleware();
     }
     private config(): void {
-        this.app.use(bodyParser.json({limit: "20mb"}));
+        this.app.use(bodyParser.json({ limit: "20mb" }));
         this.app.use(bodyParser.urlencoded({ extended: false }));
+        this.app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(conf));
     }
     private registerRouters() {
         const routers: RegistrableRouter[] = container.getAll<RegistrableRouter>(TYPES.Router);
         routers.forEach((router) => router.register(this.app));
     }
     private initilizeErrorMiddleware() {
-        this.app.use( (req, res, next) => {
+        this.app.use((req, res, next) => {
             res.status(404).json();
         });
         this.app.use(errorMiddleware);
