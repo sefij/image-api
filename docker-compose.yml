@@ -80,7 +80,7 @@ services:
       - minio
       - mongo
     environment:
-      PORT: 3000
+      NODE_PORT: 3000
       QUEUE_URI: "amqp://rabbit/default"
       S3_URI: minio
       S3_ACCESS_KEY: minio

@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === "dev") {
 }
 
 
-const PORT = normalizePort(process.env.PORT || '3000')
+const PORT = normalizePort(process.env.NODE_PORT || '3000')
 app.set('port', PORT);
 
 app.listen(PORT, () => {

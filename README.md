@@ -1,4 +1,4 @@
-# image-api
+# Image-API
 
 A RESTful API built with Node.js(Typescript), MongoDB, RabbitMQ, Minio(object store with S3ish sdk).
 
@@ -11,7 +11,7 @@ While researching how to implement this api, I decided to avoid storing all the 
 
 ### Important environnment variables in the docker-compose.yml
 
-- PORT
+- NODE_PORT
 - QUEUE_URI
 - S3_URI
 - S3_ACCESS_KEY/MINIO_ACCESS_KEY
