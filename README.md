@@ -23,7 +23,7 @@ While researching how to implement this api, I decided to avoid storing all the 
 - DB_NAME/MONGO_INITDB_DATABASE
 
 
-### Install $ start
+### Install & start
 
 ```
 1. git clone
