@@ -36,7 +36,7 @@ export class ImageRepository implements ImageRepository {
             return false;
         };
     }
-    public async markImageasDeleted(uniquename: string) {
+    public async markImageAsDeleted(uniquename: string) {
         const db = await mongoConnector.getDbInstance();
         if (db) {
             const a: UpdateWriteOpResult = await db.collection("images").updateOne({ "uniquename": uniquename,}, { $set: { "isactive": false } });

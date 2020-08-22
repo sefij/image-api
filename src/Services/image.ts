@@ -30,11 +30,17 @@ export class ImageService {
         if (os) {
             return this.imageRepository.getImageUniqueName(filename, user)
                 .then(name => {
-                    return Promise.all([os.removeObject(name.bucket, name.uniquename).then((details: any) => {
-                        return true;
-                    }).catch((err) => {
-                        return [false, err];
-                    }), this.imageRepository.markImageasDeleted(name)])
+                    if (name) {
+                        return Promise.all([os.removeObject(name.bucket, name.uniquename).then((details: any) => {
+                            return true;
+                        }).catch((err) => {
+                            // console.log(err);
+                            return [false, err];
+                        }), this.imageRepository.markImageAsDeleted(name.uniquename)])
+                    }
+                    else {
+                        return Promise.reject('No image found');
+                    }
                 });
         }
         else {
@@ -46,19 +52,23 @@ export class ImageService {
         if (os) {
             return await this.imageRepository.getImageUniqueName(filename, user)
                 .then(name => {
-                    return os.getObject('data', name.uniquename).then((strm) => {
-                        const dest = path.join(__dirname, '../../uploads', filename);
-                        const writeStream = fs.createWriteStream(dest);
-
-                        return new Promise((resolve, reject) => {
-                            strm.on("error", () => reject);
-                            writeStream.on("error", reject);
-                            writeStream.on("finish", () => resolve(dest));
-                            strm.pipe(writeStream);
-                        });
-                    }).catch((err) => {
-                        return [false, err].toString();
-                    })
+                    if (name) {
+                        return os.getObject('data', name.uniquename).then((strm) => {
+                            const dest = path.join(__dirname, '../../uploads', filename);
+                            const writeStream = fs.createWriteStream(dest);
+                            return new Promise((resolve, reject) => {
+                                strm.on("error", () => reject);
+                                writeStream.on("error", reject);
+                                writeStream.on("finish", () => resolve(dest));
+                                strm.pipe(writeStream);
+                            });
+                        }).catch((err) => {
+                            return Promise.reject(err);
+                        })
+                    }
+                    else {
+                        return Promise.reject('No image found');
+                    }
                 })
         }
         return 'false';

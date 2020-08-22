@@ -28,11 +28,21 @@ export class ImageRouter implements RegistrableRouter {
                     next();
                 }
                 else {
-                    res.status(404).json({"message": "Failure downloading"});
+                    res.status(404).json({ "message": "Failure downloading" });
                     next();
                 }
             }).catch((err) => {
-                res.status(400).json({"message": "Failure downloading", "error": err});
+                if (err.code) {
+                    if (err.code === "NoSuchKey") {
+                        res.status(404).json({ "message": "No image found" });
+                    }
+                    else {
+                        res.status(500).json({ "message": "Failure downloading" });
+                    }
+                }
+                else {
+                    res.status(500).json({ "message": "Failure downloading" });
+                }
                 next();
             });
         }, statsMiddleware);
@@ -40,50 +50,60 @@ export class ImageRouter implements RegistrableRouter {
             await this.imageService.getAllUserImageNames(req.headers['x-username']).then(r => {
                 if (r) {
                     r.toArray().then(a => {
-                        res.status(200).json(a.map(elem => { return { "filename": elem.originalname, "uploadeddate": elem.uploaddate } }));
+                        if (a.length === 0) {
+                            res.status(404).json({ "message": "No image names found" });
+                        }
+                        else {
+                            res.status(200).json(a.map(elem => { return { "filename": elem.originalname, "uploadeddate": elem.uploaddate } }));
+                        }
                         next();
                     }).catch(() => {
-                        res.status(400).json({"message": "Something Broke :( "});
+                        res.status(500).json({ "message": "Something Broke :( " });
                         next();
                     });
                 }
                 else {
-                    res.status(400).json({"message": "Something Broke :( "});
+                    res.status(500).json({ "message": "Something Broke :( " });
                     next();
                 }
             }).catch((err) => {
-                res.status(400).json({"message": "Failure getting image names", "error": err});
+                res.status(500).json({ "message": "Failure getting image names", "error": err });
                 next();
             });
         });
         this.router.post('/image', authMiddleware, multer({ dest: "./uploads/" }).single("upload"), (req: Request, res: Response, next: NextFunction) => {
             this.imageService.uploadImage(req.file, req.headers['x-username']).then((whatever) => {
                 if (whatever) {
-                    res.status(200).json({"message": "Image saved successfully"});;
+                    res.status(200).json({ "message": "Image saved successfully" });;
                     this.imageService.removeTempImageFiles(path.join(__dirname, '../../uploads'));
                     next();
                 }
                 else {
-                    res.status(400).json({"message": "Failure uploading"});
+                    res.status(400).json({ "message": "Failure uploading" });
                     next();
                 }
-            }).catch(() => {
-                res.status(400).json({"message": "Something Broke :( "});
+            }).catch((err) => {
+                res.status(400).json({ "message": "Something Broke :( ", "error": err });
                 next();
             });
         }, statsMiddleware);
         this.router.delete('/image', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
             this.imageService.removeImage(req.query.filename, req.headers['x-username']).then((whatever) => {
                 if (whatever) {
-                    res.status(200).json({"message": "Image deleted successfully"});
+                    res.status(200).json({ "message": "Image deleted successfully" });
                     next();
                 }
                 else {
-                    res.status(400).json({"message": "Failure deleting"});
+                    res.status(500).json({ "message": "Failure deleting" });
                     next();
                 }
-            }).catch(() => {
-                res.status(400).json({"message": "Something Broke :( "});
+            }).catch((err) => {
+                if (err === 'No image found') {
+                    res.status(404).json({ "message": err });
+                }
+                else {
+                    res.status(500).json({ "message": "Something Broke :( ", "error": err });
+                }
                 next();
             });
         }, statsMiddleware);
