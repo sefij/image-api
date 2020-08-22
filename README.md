@@ -27,7 +27,7 @@ While researching how to implement this api, I decided to avoid storing all the 
 
 ```
 1. git clone
-2. docker-compose up -d --build --scale image-api=<amount of desired node instances>
+2. docker-compose up -d --build
 
 ```
 
@@ -35,6 +35,6 @@ While researching how to implement this api, I decided to avoid storing all the 
 
 ```
 In the case we want to scale up out application we can yse the following command:
-docker-compose up -d --build --scale image-api=<amount of desired node instances>
+docker-compose up -d --scale image-api=<amount of desired node instances>
 
 ```
