@@ -35,7 +35,6 @@ some more files who need attention when changing these environmentr variables/se
 ```
 1. git clone
 2. docker-compose up -d --build
-
 ```
 
 ### Scaling
@@ -43,14 +42,13 @@ some more files who need attention when changing these environmentr variables/se
 ```
 In the case we want to scale up out application we can use the following command:
 docker-compose up -d --scale image-api=<amount of desired node instances>
-
 ```
 
 ### Postman
 
 ```
-If you plan on using Postman for testing, I added a Postman collection config file on the rot directory called image-api.postman_collection.json
+If you plan on using Postman for testing, 
+I added a Postman collection config file on the rot directory called image-api.postman_collection.json
 
 Enjoy :)
-
 ```
