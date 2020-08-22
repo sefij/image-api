@@ -72,7 +72,7 @@ export class ImageRouter implements RegistrableRouter {
             });
         });
         this.router.post('/image', authMiddleware, multer({ dest: "./uploads/" }).single("upload"), (req: Request, res: Response, next: NextFunction) => {
-            this.imageService.uploadImage(req.file, req.headers['x-username']).then((whatever) => {
+            this.imageService.uploadImage(req.file, req.headers['x-username'], req.body.overwrite).then((whatever) => {
                 if (whatever) {
                     res.status(200).json({ "message": "Image saved successfully" });;
                     this.imageService.removeTempImageFiles(path.join(__dirname, '../../uploads'));

@@ -15,11 +15,17 @@ export class ImageService {
     public async getAllUserImageNames(user: any) {
         return this.imageRepository.getUserImageNames(user);
     }
-    public async uploadImage(file: any, user: any) {
+    public async uploadImage(file: any, user: any, overwrite: any) {
         const os = await S3Connector.getConnection();
         if (os) {
             const filedetails = new ImageDetails(file.originalname, uuid(), "data", user, new Date(), true);
-            return Promise.all([this.imageRepository.saveImageDetails(filedetails), os.fPutObject(filedetails.bucket, filedetails.uniquename, file.path, {})]);
+            if (overwrite) {
+                return this.imageRepository.updateMultipleImagesToInactive(user, file.originalname, "data")
+                .then(() => { return Promise.all([this.imageRepository.saveImageDetails(filedetails, true), os.fPutObject(filedetails.bucket, filedetails.uniquename, file.path, {})]) })
+            }
+            else {
+                return this.imageRepository.saveImageDetails(filedetails, false);
+            }
         }
         else {
             return false;
@@ -34,7 +40,6 @@ export class ImageService {
                         return Promise.all([os.removeObject(name.bucket, name.uniquename).then((details: any) => {
                             return true;
                         }).catch((err) => {
-                            // console.log(err);
                             return [false, err];
                         }), this.imageRepository.markImageAsDeleted(name.uniquename)])
                     }

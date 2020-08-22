@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { InsertOneWriteOpResult, Int32, UpdateManyOptions, UpdateWriteOpResult } from "mongodb";
+import { InsertOneWriteOpResult, UpdateWriteOpResult } from "mongodb";
 import mongoConnector from "./mongodb_connector";
 import { ImageDetails } from "../Types/image_details";
 import * as fs from 'fs';
@@ -30,7 +30,17 @@ export class ImageRepository implements ImageRepository {
         const db = await mongoConnector.getDbInstance();
         if (db) {
             const a: UpdateWriteOpResult = await db.collection("images").updateOne({ "originalname": detail.originalname, "uniquename": detail.uniquename, "bucket": detail.bucket, "uploadinguser": detail.uploadinguser, "uploaddate": detail.uploaddate }, { $set: { "isactive": true } });
-            return a.result.ok;
+            return (a.result.ok === 1 && a.result.nModified > 0);
+        }
+        else {
+            return false;
+        };
+    }
+    public async updateMultipleImagesToInactive(user: any, originalname: any, bucket: any) {
+        const db = await mongoConnector.getDbInstance();
+        if (db) {
+            const a: UpdateWriteOpResult = await db.collection("images").updateMany({ "originalname": originalname,"bucket": bucket, "uploadinguser": user }, { $set: { "isactive": false } });
+            return (a.result.ok === 1 && a.result.nModified > 0);
         }
         else {
             return false;
@@ -40,7 +50,7 @@ export class ImageRepository implements ImageRepository {
         const db = await mongoConnector.getDbInstance();
         if (db) {
             const a: UpdateWriteOpResult = await db.collection("images").updateOne({ "uniquename": uniquename,}, { $set: { "isactive": false } });
-            return a.result.ok;
+            return (a.result.ok === 1 && a.result.nModified > 0);
         }
         else {
             return false;
@@ -55,11 +65,11 @@ export class ImageRepository implements ImageRepository {
             return false;
         }
     }
-    public async saveImageDetails(file: ImageDetails) {
+    public async saveImageDetails(file: ImageDetails, overwrite: boolean) {
         const db = await mongoConnector.getDbInstance();
         if (db) {
             const a: InsertOneWriteOpResult<any> = await db.collection("images").insertOne({ "originalname": file.originalname, "uniquename": file.uniquename, "bucket": file.bucket, "uploadinguser": file.uploadinguser, "uploaddate": new Date(), "isactive": true });
-            return a.result.ok;
+            return (a.result.ok === 1 && a.result.n > 0);
         }
         else {
             return false;

@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "title": "Swagger Petstore"
   },
-  "host": "localhost:8080",
+  "host": "localhost:4000",
   "basePath": "/api",
   "schemes": [
     "http"
@@ -32,6 +32,13 @@
             "type": "file",
             "description": "Image file to be uploaded",
             "required": true
+          },
+          {
+            "in": "formData",
+            "name": "overwrite",
+            "type": "string",
+            "description": "true for overwriting existing images instead of keeping miltiple images with the same name",
+            "required": false
           },
           {
             "in": "header",
