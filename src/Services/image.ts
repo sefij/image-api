@@ -28,13 +28,12 @@ export class ImageService {
         if (os) {
             return this.imageRepository.getImageUniqueName(filename, user)
                 .then(name => {
-                    return os.removeObject(name.bucket, name.uniquename).then((details: any) => {
+                    return Promise.all([os.removeObject(name.bucket, name.uniquename).then((details: any) => {
                         return true;
                     }).catch((err) => {
                         return [false, err];
-                    })
+                    }), this.imageRepository.markImageasDeleted(name)])
                 });
-            return false;
         }
         else {
             return false;
@@ -45,8 +44,8 @@ export class ImageService {
         if (os) {
             return await this.imageRepository.getImageUniqueName(filename, user)
                 .then(name => {
-                    return os.fGetObject('data', name.uniquename, savepath).then(() => {
-                        return true;
+                    return os.getObject('data', name.uniquename).then((strm) => {
+                        return strm;
                     }).catch((err) => {
                         return [false, err];
                     })
