@@ -28,7 +28,7 @@ export class ImageRouter implements RegistrableRouter {
                     next();
                 }
                 else {
-                    res.status(404).json({ "message": "Failure downloading" });
+                    res.status(404).json({ "message": "No image found" });
                     next();
                 }
             }).catch((err) => {
@@ -37,11 +37,11 @@ export class ImageRouter implements RegistrableRouter {
                         res.status(404).json({ "message": "No image found" });
                     }
                     else {
-                        res.status(500).json({ "message": "Failure downloading" });
+                        res.status(500).json({ "message": "Something Broke :( " });
                     }
                 }
                 else {
-                    res.status(500).json({ "message": "Failure downloading" });
+                    res.status(500).json({ "message": "Something Broke :( " });
                 }
                 next();
             });
@@ -67,7 +67,7 @@ export class ImageRouter implements RegistrableRouter {
                     next();
                 }
             }).catch((err) => {
-                res.status(500).json({ "message": "Failure getting image names", "error": err });
+                res.status(500).json({ "message": "Something Broke :( "});
                 next();
             });
         });
@@ -79,7 +79,7 @@ export class ImageRouter implements RegistrableRouter {
                     next();
                 }
                 else {
-                    res.status(500).json({ "message": "Failure uploading" });
+                    res.status(500).json({ "message": "Something Broke :( " });
                     next();
                 }
             }).catch((err) => {
@@ -94,7 +94,7 @@ export class ImageRouter implements RegistrableRouter {
                     next();
                 }
                 else {
-                    res.status(500).json({ "message": "Failure deleting" });
+                    res.status(500).json({ "message": "Something Broke :( " });
                     next();
                 }
             }).catch((err) => {
@@ -102,7 +102,7 @@ export class ImageRouter implements RegistrableRouter {
                     res.status(404).json({ "message": err });
                 }
                 else {
-                    res.status(500).json({ "message": "Something Broke :( ", "error": err });
+                    res.status(500).json({ "message": "Something Broke :( "});
                 }
                 next();
             });

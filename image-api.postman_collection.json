@@ -1,0 +1,239 @@
+{
+	"info": {
+		"_postman_id": "73b25be5-66b7-4fab-8aba-61176a796471",
+		"name": "image-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get-imagenames",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true,
+					"user-agent": true
+				},
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-username",
+						"value": "sef0",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "0.0.0.0:8080/api/imagenames",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"imagenames"
+					],
+					"query": [
+						{
+							"key": "filename",
+							"value": "photo.jpg",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-image",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				},
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-username",
+						"value": "sef",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "0.0.0.0:8080/api/image?filename=photo.jpg",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"image"
+					],
+					"query": [
+						{
+							"key": "filename",
+							"value": "photo.jpg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post-image",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-username",
+						"value": "sef",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "upload",
+							"type": "file",
+							"src": "/D:/photo.jpg"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "0.0.0.0:8080/api/image",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"image"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-usage",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-username",
+						"value": "sef",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "0.0.0.0:8080/api/usage",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"usage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete-image",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-username",
+						"value": "sef",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "0.0.0.0:8080/api/image?filename=aa.png",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"image"
+					],
+					"query": [
+						{
+							"key": "filename",
+							"value": "aa.png"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

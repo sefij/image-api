@@ -8,6 +8,8 @@ Designed with real time performance ,usability and scallability in mind.
 
 While researching how to implement this api, I decided to avoid storing all the files contents in MongoDB. Therefore I added the usage of Minio for file storage and proceeded to save the image details in MongoDB.
 
+Swagger will be at http://localhost:8080/api-docs/
+
 
 ### Important environnment variables in the docker-compose.yml
 
@@ -21,6 +23,11 @@ While researching how to implement this api, I decided to avoid storing all the 
 - MONGO_USER
 - MONGO_PASS
 - DB_NAME/MONGO_INITDB_DATABASE
+
+some more files who need attention when changing these environmentr variables/settings:
+ - init-mongo.js - the name of the database the mongodb instance is defined there
+ - .env - the file has the definitions for the s3 bucket initialize
+ - rabbitmq-config/definitions.json has all the queues thet are going to be initialize on startup, you can add more if you want to
 
 
 ### Install & start
@@ -36,5 +43,14 @@ While researching how to implement this api, I decided to avoid storing all the 
 ```
 In the case we want to scale up out application we can use the following command:
 docker-compose up -d --scale image-api=<amount of desired node instances>
+
+```
+
+### Postman
+
+```
+If you plan on using Postman for testing, I added a Postman collection config file on the rot directory called image-api.postman_collection.json
+
+Enjoy :)
 
 ```
