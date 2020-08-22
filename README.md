@@ -1,4 +1,4 @@
-# Image-API
+# Image-API - WIP
 
 A RESTful API built with Node.js(Typescript), Nginx, MongoDB, RabbitMQ and Minio(object store with S3ish sdk).
 
