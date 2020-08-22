@@ -1,10 +1,10 @@
 # Image-API
 
-A RESTful API built with Node.js(Typescript), MongoDB, RabbitMQ, Minio(object store with S3ish sdk).
+A RESTful API built with Node.js(Typescript), Nginx, MongoDB, RabbitMQ and Minio(object store with S3ish sdk).
 
 ### About
 
-Designed with real time performance and usability in mind.
+Designed with real time performance ,usability and scallability in mind.
 
 While researching how to implement this api, I decided to avoid storing all the files in MongoDB. Therefore I added the usage of Minio for file storage and proceeded to save the image details in MongoDB.
 
@@ -27,6 +27,6 @@ While researching how to implement this api, I decided to avoid storing all the 
 
 ```
 1. git clone
-2. docker-compose up -d --build
+2. docker-compose up -d --build --scale image-api=<amount of desired node instances>
 
 ```

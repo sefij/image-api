@@ -8,12 +8,14 @@ import errorMiddleware from "./middleware/error.middleware";
 import * as swaggerUi from "swagger-ui-express";
 // tslint:disable-next-line: no-var-requires
 const conf = require('../Swagger');
+import cors from "cors";
 
 
 class App {
     public app: express.Application;
     constructor() {
         this.app = express();
+        this.app.use(cors())
         this.config();
         this.registerRouters();
         this.initilizeErrorMiddleware();

@@ -65,8 +65,7 @@ services:
       - 5672:5672
       - 15672:15672
 
-  node-image-api:
-    container_name: "image-api"
+  image-api:
     networks:
       - api_server_default
     build:
@@ -91,5 +90,16 @@ services:
       MONGO_PASS: data
       DB_NAME: data
     ports:
-      - 3000:3000
+      - 3000
+    restart: always
+  
+  nginx:
+    build: ./nginx
+    container_name: "nginx-lb"
+    networks:
+      - api_server_default
+    ports:
+      - "8080:80"
+    depends_on:
+      - image-api
     restart: always
