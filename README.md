@@ -34,7 +34,7 @@ While researching how to implement this api, I decided to avoid storing all the 
 ### Scaling
 
 ```
-In the case we want to scale up out application we can yse the following command:
+In the case we want to scale up out application we can use the following command:
 docker-compose up -d --scale image-api=<amount of desired node instances>
 
 ```
