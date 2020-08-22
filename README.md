@@ -6,7 +6,7 @@ A RESTful API built with Node.js(Typescript), Nginx, MongoDB, RabbitMQ and Minio
 
 Designed with real time performance ,usability and scallability in mind.
 
-While researching how to implement this api, I decided to avoid storing all the files in MongoDB. Therefore I added the usage of Minio for file storage and proceeded to save the image details in MongoDB.
+While researching how to implement this api, I decided to avoid storing all the files contents in MongoDB. Therefore I added the usage of Minio for file storage and proceeded to save the image details in MongoDB.
 
 
 ### Important environnment variables in the docker-compose.yml

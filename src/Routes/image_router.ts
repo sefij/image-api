@@ -1,12 +1,12 @@
 import { Application, NextFunction, Request, Response, Router } from "express";
 import { inject, injectable } from "inversify";
 import multer from "multer"
-
 import { ImageService } from '../Services/image';
 import TYPES from "../types";
 import { RegistrableRouter } from "./RegistrableRouter";
 import authMiddleware from "../middleware/auth.middleware";
 import statsMiddleware from "../middleware/stats.middleware";
+import * as path from 'path';
 
 @injectable()
 export class ImageRouter implements RegistrableRouter {
@@ -20,68 +20,70 @@ export class ImageRouter implements RegistrableRouter {
     public register(app: Application): void {
         app.use("/api", this.router);
         this.router.get("/image", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
-            await this.imageService.getImage(req.query.filename, req.query.pathtosaveto, req.headers['x-username']).then(r => {
+            await this.imageService.getImage(req.query.filename, req.query.pathtosaveto, req.headers['x-username']).then((r: any) => {
                 if (r) {
-                    res.status(200).send('Image downloaded successfully to: ' + req.query.pathtosaveto);
+                    const name = req.query.filename as string;
+                    res.status(200).sendFile(path.join(__dirname, '../../uploads', name));
+                    this.imageService.removeTempImageFiles(path.join(__dirname, '../../uploads'));
                     next();
                 }
                 else {
-                    res.status(404).send('Failure downloading');
+                    res.status(404).json({"message": "Failure downloading"});
                     next();
                 }
-            }).catch(() => {
-                res.status(400).send('Failure downloading');
+            }).catch((err) => {
+                res.status(400).json({"message": "Failure downloading", "error": err});
                 next();
             });
-        }, statsMiddleware );
+        }, statsMiddleware);
         this.router.get("/imagenames", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
             await this.imageService.getAllUserImageNames(req.headers['x-username']).then(r => {
                 if (r) {
                     r.toArray().then(a => {
-                        res.status(200).send(a.map(elem => { return { "filename": elem.originalname, "uploadeddate": elem.uploaddate } }));
+                        res.status(200).json(a.map(elem => { return { "filename": elem.originalname, "uploadeddate": elem.uploaddate } }));
                         next();
                     }).catch(() => {
-                        res.status(400).send('Something Broke :( ');
+                        res.status(400).json({"message": "Something Broke :( "});
                         next();
                     });
                 }
                 else {
-                    res.status(400).send('Something Broke :( ');
+                    res.status(400).json({"message": "Something Broke :( "});
                     next();
                 }
-            }).catch(() => {
-                res.status(400).send('Something Broke :( ');
+            }).catch((err) => {
+                res.status(400).json({"message": "Failure getting image names", "error": err});
                 next();
             });
         });
         this.router.post('/image', authMiddleware, multer({ dest: "./uploads/" }).single("upload"), (req: Request, res: Response, next: NextFunction) => {
             this.imageService.uploadImage(req.file, req.headers['x-username']).then((whatever) => {
                 if (whatever) {
-                    res.status(200).send('Image saved successfully');
-                    this.imageService.removeTempImageFiles("./uploads/");
+                    res.status(200).json({"message": "Image saved successfully"});;
+                    this.imageService.removeTempImageFiles(path.join(__dirname, '../../uploads'));
                     next();
                 }
                 else {
-                    res.status(400).send('Failure uploading');
+                    res.status(400).json({"message": "Failure uploading"});
                     next();
                 }
             }).catch(() => {
-                res.status(400).send('Something Broke :( ');
+                res.status(400).json({"message": "Something Broke :( "});
                 next();
             });
         }, statsMiddleware);
         this.router.delete('/image', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
             this.imageService.removeImage(req.query.filename, req.headers['x-username']).then((whatever) => {
                 if (whatever) {
-                    res.status(200).send('Image deleted successfully');
+                    res.status(200).json({"message": "Image deleted successfully"});
                     next();
                 }
                 else {
-                    res.status(400).send('Failure deleting');
+                    res.status(400).json({"message": "Failure deleting"});
                     next();
                 }
             }).catch(() => {
-                res.status(400).send('Something Broke :( ');
+                res.status(400).json({"message": "Something Broke :( "});
                 next();
             });
         }, statsMiddleware);

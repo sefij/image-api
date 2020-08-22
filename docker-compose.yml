@@ -29,12 +29,17 @@ services:
       - minio
     networks:
       - api_server_default
+    environment:
+      - MINIO_URI=${MINIO_URI}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET=${MINIO_BUCKET}
     entrypoint: >
       /bin/sh -c '
       sleep 5;
-      /usr/bin/mc config host add s3 http://minio:9000 minio minio123 --api S3v4;
-      [[ ! -z "`/usr/bin/mc ls s3 | grep data`" ]] || /usr/bin/mc mb s3/data;
-      /usr/bin/mc policy download s3/data;
+      /usr/bin/mc config host add s3 http://$MINIO_URI:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --api S3v4;
+      [[ ! -z "`/usr/bin/mc ls s3 | grep $MINIO_BUCKET`" ]] || /usr/bin/mc mb s3/$MINIO_BUCKET;
+      /usr/bin/mc policy download s3/$MINIO_BUCKET;
       exit 0;'
 
   mongo:

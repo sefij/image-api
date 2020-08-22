@@ -5,6 +5,8 @@ import S3Connector from "../Repositories/s3_connector"
 import "reflect-metadata";
 import { ImageRepository } from "../Repositories/image_repository"
 import { ImageDetails } from "../Types/image_details";
+import * as fs from 'fs';
+import * as path from 'path';
 
 @injectable()
 export class ImageService {
@@ -45,13 +47,21 @@ export class ImageService {
             return await this.imageRepository.getImageUniqueName(filename, user)
                 .then(name => {
                     return os.getObject('data', name.uniquename).then((strm) => {
-                        return strm;
+                        const dest = path.join(__dirname, '../../uploads', filename);
+                        const writeStream = fs.createWriteStream(dest);
+
+                        return new Promise((resolve, reject) => {
+                            strm.on("error", () => reject);
+                            writeStream.on("error", reject);
+                            writeStream.on("finish", () => resolve(dest));
+                            strm.pipe(writeStream);
+                        });
                     }).catch((err) => {
-                        return [false, err];
+                        return [false, err].toString();
                     })
                 })
         }
-        return false;
+        return 'false';
     }
     public async updateImage(detail: ImageDetails) {
         const os = await S3Connector.getConnection();
