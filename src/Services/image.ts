@@ -47,7 +47,7 @@ export class ImageService {
             return false;
         }
     }
-    public async getImage(filename: any, savepath: any, user: any) {
+    public async getImage(filename: any, user: any) {
         const os = await S3Connector.getConnection();
         if (os) {
             return await this.imageRepository.getImageUniqueName(filename, user)

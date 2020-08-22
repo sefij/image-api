@@ -20,7 +20,7 @@ export class ImageRouter implements RegistrableRouter {
     public register(app: Application): void {
         app.use("/api", this.router);
         this.router.get("/image", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
-            await this.imageService.getImage(req.query.filename, req.query.pathtosaveto, req.headers['x-username']).then((r: any) => {
+            await this.imageService.getImage(req.query.filename, req.headers['x-username']).then((r: any) => {
                 if (r) {
                     const name = req.query.filename as string;
                     res.status(200).sendFile(path.join(__dirname, '../../uploads', name));
@@ -79,11 +79,11 @@ export class ImageRouter implements RegistrableRouter {
                     next();
                 }
                 else {
-                    res.status(400).json({ "message": "Failure uploading" });
+                    res.status(500).json({ "message": "Failure uploading" });
                     next();
                 }
             }).catch((err) => {
-                res.status(400).json({ "message": "Something Broke :( ", "error": err });
+                res.status(500).json({ "message": "Something Broke :( "});
                 next();
             });
         }, statsMiddleware);
