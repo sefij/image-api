@@ -31,8 +31,8 @@ export class ImageRepository implements ImageRepository {
     public async updateImageDetails(detail: ImageDetails) {
         const db = await mongoConnector.getDbInstance();
         if (db) {
-            const a: UpdateWriteOpResult = await db.collection("images").updateOne({ "originalname": detail.originalname, "uniquename": detail.uniquename, "bucket": detail.bucket, "uploadinguser": detail.uploadinguser, "uploaddate": detail.uploaddate }, { $set: { "isactive": true } });
-            return (a.result.ok === 1 && a.result.nModified > 0);
+            const updateRes: UpdateWriteOpResult = await db.collection("images").updateOne({ "originalname": detail.originalname, "uniquename": detail.uniquename, "bucket": detail.bucket, "uploadinguser": detail.uploadinguser, "uploaddate": detail.uploaddate }, { $set: { "isactive": true } });
+            return (updateRes.result.ok === 1 && updateRes.result.nModified > 0);
         }
         else {
             return false;
@@ -41,8 +41,8 @@ export class ImageRepository implements ImageRepository {
     public async updateMultipleImagesToInactive(user: any, originalname: any, bucket: any) {
         const db = await mongoConnector.getDbInstance();
         if (db) {
-            const a: UpdateWriteOpResult = await db.collection("images").updateMany({ "originalname": originalname,"bucket": bucket, "uploadinguser": user }, { $set: { "isactive": false } });
-            return (a.result.ok === 1 && a.result.nModified > 0);
+            const updateRes: UpdateWriteOpResult = await db.collection("images").updateMany({ "originalname": originalname,"bucket": bucket, "uploadinguser": user }, { $set: { "isactive": false } });
+            return (updateRes.result.ok === 1 && updateRes.result.nModified > 0);
         }
         else {
             return false;
@@ -51,8 +51,8 @@ export class ImageRepository implements ImageRepository {
     public async markImageAsDeleted(uniquename: string) {
         const db = await mongoConnector.getDbInstance();
         if (db) {
-            const a: UpdateWriteOpResult = await db.collection("images").updateOne({ "uniquename": uniquename,}, { $set: { "isactive": false } });
-            return (a.result.ok === 1 && a.result.nModified > 0);
+            const updateRes: UpdateWriteOpResult = await db.collection("images").updateOne({ "uniquename": uniquename,}, { $set: { "isactive": false } });
+            return (updateRes.result.ok === 1 && updateRes.result.nModified > 0);
         }
         else {
             return false;
@@ -70,8 +70,8 @@ export class ImageRepository implements ImageRepository {
     public async saveImageDetails(file: ImageDetails, overwrite: boolean) {
         const db = await mongoConnector.getDbInstance();
         if (db) {
-            const a: InsertOneWriteOpResult<any> = await db.collection("images").insertOne({ "originalname": file.originalname, "uniquename": file.uniquename, "bucket": file.bucket, "uploadinguser": file.uploadinguser, "uploaddate": new Date(), "isactive": true });
-            return (a.result.ok === 1 && a.result.n > 0);
+            const insertRes: InsertOneWriteOpResult<any> = await db.collection("images").insertOne({ "originalname": file.originalname, "uniquename": file.uniquename, "bucket": file.bucket, "uploadinguser": file.uploadinguser, "uploaddate": new Date(), "isactive": true });
+            return (insertRes.result.ok === 1 && insertRes.result.n > 0);
         }
         else {
             return false;

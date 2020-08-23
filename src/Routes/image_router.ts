@@ -24,8 +24,8 @@ export class ImageRouter implements RegistrableRouter {
     public register(app: Application): void {
         app.use("/api", this.router);
         this.router.get("/image", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
-            await this.imageService.getImage(req.query.filename, req.headers['x-username']).then((r: any) => {
-                if (r) {
+            await this.imageService.getImage(req.query.filename, req.headers['x-username']).then((getImageRes: any) => {
+                if (getImageRes) {
                     const name = req.query.filename as string;
                     res.status(200).sendFile(path.join(__dirname, '../../uploads', name));
                     this.imageService.removeTempImageFiles(path.join(__dirname, '../../uploads'));
@@ -57,14 +57,14 @@ export class ImageRouter implements RegistrableRouter {
             });
         }, statsMiddleware);
         this.router.get("/imagenames", authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
-            await this.imageService.getAllUserImageNames(req.headers['x-username']).then(r => {
-                if (r) {
-                    r.toArray().then(a => {
-                        if (a.length === 0) {
+            await this.imageService.getAllUserImageNames(req.headers['x-username']).then(getAllUserImageNamesRes => {
+                if (getAllUserImageNamesRes) {
+                    getAllUserImageNamesRes.toArray().then(arr => {
+                        if (arr.length === 0) {
                             res.status(404).json({ "message": "No image names found" });
                         }
                         else {
-                            res.status(200).json(a.map(elem => { return { "filename": elem.originalname, "uploadeddate": elem.uploaddate } }));
+                            res.status(200).json(arr.map(elem => { return { "filename": elem.originalname, "uploadeddate": elem.uploaddate } }));
                         }
                         next();
                     }).catch((err) => {
@@ -84,8 +84,8 @@ export class ImageRouter implements RegistrableRouter {
             });
         });
         this.router.post('/image', authMiddleware, multer({ dest: "./uploads/" }).single("upload"), (req: Request, res: Response, next: NextFunction) => {
-            this.imageService.uploadImage(req.file, req.headers['x-username'], req.body.overwrite).then((whatever) => {
-                if (whatever) {
+            this.imageService.uploadImage(req.file, req.headers['x-username'], req.body.overwrite).then((uploadImageRes) => {
+                if (uploadImageRes) {
                     res.status(200).json({ "message": "Image saved successfully" });;
                     this.imageService.removeTempImageFiles(path.join(__dirname, '../../uploads'));
                     next();
@@ -101,8 +101,8 @@ export class ImageRouter implements RegistrableRouter {
             });
         }, statsMiddleware);
         this.router.delete('/image', authMiddleware, (req: Request, res: Response, next: NextFunction) => {
-            this.imageService.removeImage(req.query.filename, req.headers['x-username']).then((whatever) => {
-                if (whatever) {
+            this.imageService.removeImage(req.query.filename, req.headers['x-username']).then((removeImageRes) => {
+                if (removeImageRes) {
                     res.status(200).json({ "message": "Image deleted successfully" });
                     next();
                 }

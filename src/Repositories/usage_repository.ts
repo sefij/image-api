@@ -15,27 +15,27 @@ export class UsageRepository implements UsageRepository {
         const queue = await QueueConnector.getConnection();
         queue.consume('GET-image', async (msg) => {
             if (msg) {
-                const i :string = await JSON.parse(msg.content.toString()).user;
-                const ob : Dictionary = {};
-                ob[i] = this.usageReport.imagesViewed[i]? this.usageReport.imagesViewed[i]+1: 1;
-                this.usageReport.imagesViewed[i] = ob[i];
+                const msgUser :string = await JSON.parse(msg.content.toString()).user;
+                const tempDictionary : Dictionary = {};
+                tempDictionary[msgUser] = this.usageReport.imagesViewed[msgUser]? this.usageReport.imagesViewed[msgUser]+1: 1;
+                this.usageReport.imagesViewed[msgUser] = tempDictionary[msgUser];
             }
         });
         queue.consume('POST-image', async (msg) => {
             if (msg) {
                 this.usageReport.totalImages++;
-                const i :string = await JSON.parse(msg.content.toString()).user;
-                const ob : Dictionary = {};
-                ob[i] = this.usageReport.imagesUploaded[i]? this.usageReport.imagesUploaded[i]+1: 1;
-                this.usageReport.imagesUploaded[i] = ob[i];
+                const msgUser :string = await JSON.parse(msg.content.toString()).user;
+                const tempDictionary : Dictionary = {};
+                tempDictionary[msgUser] = this.usageReport.imagesUploaded[msgUser]? this.usageReport.imagesUploaded[msgUser]+1: 1;
+                this.usageReport.imagesUploaded[msgUser] = tempDictionary[msgUser];
             }
         });
         queue.consume('DELETE-image', async (msg) => {
             if (msg) {
-                const i :string = await JSON.parse(msg.content.toString()).user;
-                const ob : Dictionary = {};
-                ob[i] = this.usageReport.imagesDeleted[i]? this.usageReport.imagesDeleted[i]+1: 1;
-                this.usageReport.imagesDeleted[i] = ob[i];
+                const msgUser :string = await JSON.parse(msg.content.toString()).user;
+                const tempDictionary : Dictionary = {};
+                tempDictionary[msgUser] = this.usageReport.imagesDeleted[msgUser]? this.usageReport.imagesDeleted[msgUser]+1: 1;
+                this.usageReport.imagesDeleted[msgUser] = tempDictionary[msgUser];
             }
         });
     }
