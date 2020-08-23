@@ -4,15 +4,17 @@ import mongoConnector from "./mongodb_connector";
 import { ImageDetails } from "../Types/image_details";
 import * as fs from 'fs';
 import * as path from 'path';
+import { LoggingService } from "../Services/logging"
 
 @injectable()
 export class ImageRepository implements ImageRepository {
+    private loggingService: LoggingService;
     public removeTempImageFiles(uploadDir: string) {
         return fs.readdir(uploadDir, (err, files) => {
-            if (err) throw err;
+            if (err) this.loggingService.log ("error", err.toString() );
             for (const file of files) {
-                fs.unlink(path.join(uploadDir, file), (unlinkArr) => {
-                    if (unlinkArr) throw unlinkArr;
+                fs.unlink(path.join(uploadDir, file), (unlinkErr) => {
+                    if (unlinkErr) this.loggingService.log ("error", unlinkErr.toString() );
                 });
             }
         });

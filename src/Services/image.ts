@@ -7,11 +7,18 @@ import { ImageRepository } from "../Repositories/image_repository"
 import { ImageDetails } from "../Types/image_details";
 import * as fs from 'fs';
 import * as path from 'path';
+import { LoggingService } from "../Services/logging"
 
 @injectable()
 export class ImageService {
     @inject(TYPES.ImageRepository)
     private imageRepository: ImageRepository;
+    private loggingService: LoggingService;
+
+    constructor(@inject(TYPES.ImageRepository) imageRepository: ImageRepository, @inject(TYPES.LoggingService) loggingService: LoggingService) {
+        this.imageRepository = imageRepository;
+        this.loggingService = loggingService;
+    }
     public async getAllUserImageNames(user: any) {
         return this.imageRepository.getUserImageNames(user);
     }
@@ -21,10 +28,28 @@ export class ImageService {
             const filedetails = new ImageDetails(file.originalname, uuid(), "data", user, new Date(), true);
             if (overwrite) {
                 return this.imageRepository.updateMultipleImagesToInactive(user, file.originalname, "data")
-                .then(() => { return Promise.all([this.imageRepository.saveImageDetails(filedetails, true), os.fPutObject(filedetails.bucket, filedetails.uniquename, file.path, {})]) })
+                    .then(() => {
+                        return this.imageRepository.saveImageDetails(filedetails, true).then(() => {
+                            return os.fPutObject(filedetails.bucket, filedetails.uniquename, file.path, {}).then(() => {
+                                return true;
+                            }).catch(async () => {
+                                await this.loggingService.log("error", "error saving image to object store");
+                                throw new Error("error saving image to object store");
+                            })
+                        })
+                    }).catch(async () => {
+                        throw new Error("error saving image");
+                    })
             }
             else {
-                return this.imageRepository.saveImageDetails(filedetails, false);
+                return this.imageRepository.saveImageDetails(filedetails, true).then(() => {
+                    return os.fPutObject(filedetails.bucket, filedetails.uniquename, file.path, {}).then(() => {
+                        return true;
+                    }).catch(async () => {
+                        await this.loggingService.log("error", "error saving image to object store");
+                        throw new Error("error saving image to object store");
+                    })
+                })
             }
         }
         else {
@@ -40,6 +65,7 @@ export class ImageService {
                         return Promise.all([os.removeObject(name.bucket, name.uniquename).then((details: any) => {
                             return true;
                         }).catch((err) => {
+                            this.loggingService.log("error", err.toString());
                             return [false, err];
                         }), this.imageRepository.markImageAsDeleted(name.uniquename)])
                     }
@@ -62,12 +88,13 @@ export class ImageService {
                             const dest = path.join(__dirname, '../../uploads', filename);
                             const writeStream = fs.createWriteStream(dest);
                             return new Promise((resolve, reject) => {
-                                strm.on("error", () => reject);
-                                writeStream.on("error", reject);
+                                strm.on("error", (err) => reject(err));
+                                writeStream.on("error", (err) => reject(err));
                                 writeStream.on("finish", () => resolve(dest));
                                 strm.pipe(writeStream);
                             });
                         }).catch((err) => {
+                            this.loggingService.log("error", err.toString());
                             return Promise.reject(err);
                         })
                     }

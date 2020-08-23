@@ -1,58 +1,67 @@
 {
-    "rabbit_version": "3.6.5",
-    "users": [
-      {
-        "name": "guest",
-        "password_hash": "o2MJjT8UKSRM7eoLDMWvm4LxqaFvDxd2wLg1KQQQ2jXfG5UE",
-        "hashing_algorithm": "rabbit_password_hashing_sha256",
-        "tags": "administrator"
+  "rabbit_version": "3.6.5",
+  "users": [
+    {
+      "name": "guest",
+      "password_hash": "o2MJjT8UKSRM7eoLDMWvm4LxqaFvDxd2wLg1KQQQ2jXfG5UE",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "default"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "default",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "parameters": [],
+  "policies": [],
+  "queues": [
+    {
+      "name": "GET-image",
+      "vhost": "default",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-ha-policy": "all"
       }
-    ],
-    "vhosts": [
-      {
-        "name": "default"
+    },
+    {
+      "name": "POST-image",
+      "vhost": "default",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-ha-policy": "all"
       }
-    ],
-    "permissions": [
-      {
-        "user": "guest",
-        "vhost": "default",
-        "configure": ".*",
-        "write": ".*",
-        "read": ".*"
+    },
+    {
+      "name": "DELETE-image",
+      "vhost": "default",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-ha-policy": "all"
       }
-    ],
-    "parameters": [],
-    "policies": [],
-    "queues": [
-      {
-        "name": "GET-image",
-        "vhost": "default",
-        "durable": true,
-        "auto_delete": false,
-        "arguments": {
-          "x-ha-policy": "all"
-        }
-      },
-      {
-        "name": "POST-image",
-        "vhost": "default",
-        "durable": true,
-        "auto_delete": false,
-        "arguments": {
-          "x-ha-policy": "all"
-        }
-      },
-      {
-        "name": "DELETE-image",
-        "vhost": "default",
-        "durable": true,
-        "auto_delete": false,
-        "arguments": {
-          "x-ha-policy": "all"
-        }
+    },
+    {
+      "name": "Logs",
+      "vhost": "default",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-ha-policy": "all"
       }
-    ],
-    "exchanges": [],
-    "bindings": []
-  }
+    }
+  ],
+  "exchanges": [],
+  "bindings": []
+}

@@ -4,10 +4,12 @@ import { inject, injectable } from "inversify";
 import { UsageService } from '../Services/usage';
 import TYPES from "../types";
 import authMiddleware from "../middleware/auth.middleware";
+import { LoggingService } from "../Services/logging"
 
 @injectable()
 export class UsageRouter implements RegistrableRouter {
    private usageService: UsageService;
+   private loggingService: LoggingService;
    private router: Router = Router();
 
    constructor(@inject(TYPES.UsageService) usageService: UsageService) {
@@ -27,8 +29,9 @@ export class UsageRouter implements RegistrableRouter {
                res.status(404).send('Failure accessing usage report');
                next();
             }
-         }).catch(() => {
+         }).catch((err) => {
             res.status(400).send('Failure  accessing usage report');
+            this.loggingService.log ("error", err.toString() );
             next();
          });;
       });

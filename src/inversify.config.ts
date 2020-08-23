@@ -8,6 +8,7 @@ import { ImageService } from "./Services/image";
 import { RegistrableRouter } from "./Routes/RegistrableRouter";
 import TYPES from "./types";
 import { UsageService } from "./Services/usage";
+import { LoggingService } from "./Services/logging";
 import { UsageRepository } from "./Repositories/usage_repository";
 
 const container = new Container();
@@ -15,6 +16,7 @@ container.bind<RegistrableRouter>(TYPES.Router).to(ImageRouter);
 container.bind<RegistrableRouter>(TYPES.Router).to(UsageRouter);
 container.bind<ImageService>(TYPES.ImageService).to(ImageService);
 container.bind<UsageService>(TYPES.UsageService).to(UsageService);
+container.bind<LoggingService>(TYPES.LoggingService).to(LoggingService);
 container.bind<ImageRepository>(TYPES.ImageRepository).to(ImageRepository);
 container.bind<UsageRepository>(TYPES.UsageRepository).to(UsageRepository);
 

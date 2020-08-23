@@ -3,6 +3,7 @@ const TYPES = {
     UsageRepository: Symbol('UsageRepository'),
     ImageService: Symbol('ImageService'),
     UsageService: Symbol('UsageService'),
+    LoggingService: Symbol('LoggingService'),
     Router: Symbol('Router')
 };
 

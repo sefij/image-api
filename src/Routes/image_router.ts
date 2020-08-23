@@ -7,14 +7,18 @@ import { RegistrableRouter } from "./RegistrableRouter";
 import authMiddleware from "../middleware/auth.middleware";
 import statsMiddleware from "../middleware/stats.middleware";
 import * as path from 'path';
+import { LoggingService } from "../Services/logging"
+import { Types } from "mongoose";
 
 @injectable()
 export class ImageRouter implements RegistrableRouter {
     private imageService: ImageService;
+    private loggingService: LoggingService;
     private router: Router = Router();
 
-    constructor(@inject(TYPES.ImageService) imageController: ImageService) {
-        this.imageService = imageController;
+    constructor(@inject(TYPES.ImageService) imageService: ImageService, @inject(TYPES.LoggingService) loggingService: LoggingService) {
+        this.imageService = imageService;
+        this.loggingService = loggingService;
     }
 
     public register(app: Application): void {
@@ -43,6 +47,7 @@ export class ImageRouter implements RegistrableRouter {
                 else {
                     res.status(500).json({ "message": "Something Broke :( " });
                 }
+                this.loggingService.log ("error", err.toString() );
                 next();
             });
         }, statsMiddleware);
@@ -57,8 +62,9 @@ export class ImageRouter implements RegistrableRouter {
                             res.status(200).json(a.map(elem => { return { "filename": elem.originalname, "uploadeddate": elem.uploaddate } }));
                         }
                         next();
-                    }).catch(() => {
+                    }).catch((err) => {
                         res.status(500).json({ "message": "Something Broke :( " });
+                        this.loggingService.log ("error", err.toString() );
                         next();
                     });
                 }
@@ -68,6 +74,7 @@ export class ImageRouter implements RegistrableRouter {
                 }
             }).catch((err) => {
                 res.status(500).json({ "message": "Something Broke :( "});
+                this.loggingService.log ("error", err.toString() );
                 next();
             });
         });
@@ -84,6 +91,7 @@ export class ImageRouter implements RegistrableRouter {
                 }
             }).catch((err) => {
                 res.status(500).json({ "message": "Something Broke :( "});
+                this.loggingService.log ("error", err.toString() );
                 next();
             });
         }, statsMiddleware);
@@ -104,6 +112,7 @@ export class ImageRouter implements RegistrableRouter {
                 else {
                     res.status(500).json({ "message": "Something Broke :( "});
                 }
+                this.loggingService.log ("error", err.toString() );
                 next();
             });
         }, statsMiddleware);
