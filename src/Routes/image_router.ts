@@ -45,7 +45,12 @@ export class ImageRouter implements RegistrableRouter {
                     }
                 }
                 else {
-                    res.status(500).json({ "message": "Something Broke :( " });
+                    if (err === "No image found") {
+                        res.status(404).json({ "message": "No image found" });
+                    }
+                    else {
+                        res.status(500).json({ "message": "Something Broke :( " });
+                    }
                 }
                 this.loggingService.log ("error", err.toString() );
                 next();
