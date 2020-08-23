@@ -44,6 +44,12 @@ In the case we want to scale up out application we can use the following command
 docker-compose up -d --scale image-api=<amount of desired node instances>
 ```
 
+### Logging
+
+```
+For now all error logs are sent to a rabbitmq queue names Logs
+```
+
 ### Postman
 
 ```
